@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 import re
 from .models import CustomUser
 
+
 class CustomUserCreationForm(UserCreationForm):
     username = forms.CharField(
         label='Логин',
@@ -11,6 +12,11 @@ class CustomUserCreationForm(UserCreationForm):
         help_text='Только латиница и цифры, не менее 6 символов'
     )
     password1 = forms.CharField(
+        label='Пароль',
+        widget=forms.PasswordInput,
+        min_length=8
+    )
+    password2 = forms.CharField(
         label='Подтверждение пароля',
         widget=forms.PasswordInput
     )
@@ -21,10 +27,10 @@ class CustomUserCreationForm(UserCreationForm):
     phone = forms.CharField(
         label='Телефон',
         max_length=20,
-        help_text='Формат: 8(ХХХ)ХХХ-ХХ-ХХ'
+        help_text='Формат: 8(XXX)XXX-XX-XX'
     )
     email = forms.EmailField(
-        label='Электронная форма'
+        label='Электронная почта'
     )
 
     def clean_username(self):
@@ -32,12 +38,19 @@ class CustomUserCreationForm(UserCreationForm):
         if not re.match(r'^[a-zA-Z0-9]+$', username):
             raise ValidationError('Логин должен содержать только латиницу и цифры')
         if len(username) < 6:
-            raise username
+            raise ValidationError('Логин должен быть не менее 6 символов')
+        return username
+
+    def clean_full_name(self):
+        full_name = self.cleaned_data.get('full_name')
+        if not all(c.isalpha() or c.isspace() for c in full_name):
+            raise ValidationError('ФИО должно содержать только символы кириллицы и пробелы')
+        return full_name
 
     def clean_phone(self):
         phone = self.cleaned_data.get('phone')
         if not re.match(r'^8\(\d{3}\)\d{3}-\d{2}-\d{2}$', phone):
-            raise ValidationError('Телефон должен быть в формате 8(ХХХ)ХХХ-ХХ-ХХ')
+            raise ValidationError('Телефон должен быть в формате 8(XXX)XXX-XX-XX')
         return phone
 
     class Meta:

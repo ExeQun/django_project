@@ -1,15 +1,18 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.core.exceptions import ValidationError
 import re
 
+
 def validate_phone(value):
-    pattern = r'^8\(\d{3}\)\d{3}-\d{2}$'
+    pattern = r'^8\(\d{3}\)\d{3}-\d{2}-\d{2}$'
     if not re.match(pattern, value):
-        raise ValueError('Телефон должен быть в формате 8(ххх)ххх-хх-хх')
+        raise ValidationError('Телефон должен быть в формате 8(XXX)XXX-XX-XX')
+
 
 def validate_cyrillic(value):
     if not all(c.isalpha() or c.isspace() for c in value):
-        raise ValueError('Фио должно содержать только символы кириллицы и пробелы')
+        raise ValidationError('ФИО должно содержать только символы кириллицы и пробелы')
 
 class CustomUser(AbstractUser):
     username = models.CharField(

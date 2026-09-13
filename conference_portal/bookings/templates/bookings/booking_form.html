@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Новая заявка - Конференции.РФ{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">Новая заявка на бронирование</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="id_room_name" class="form-label">Название помещения</label>
+                        <input type="text" name="room_name" id="id_room_name" class="form-control"
+                               placeholder="Например: Аудитория 101, Коворкинг Центр, Кинозал" required>
+                        <div class="form-text">Введите название помещения для проведения конференции</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_conference_date" class="form-label">Дата и время начала конференции</label>
+                        <input type="datetime-local" name="conference_date" id="id_conference_date" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_payment_method" class="form-label">Способ оплаты</label>
+                        <select name="payment_method" id="id_payment_method" class="form-select" required>
+                            <option value="">Выберите способ оплаты</option>
+                            <option value="offline">Очное посещение</option>
+                            <option value="sbp">Перевод по системе СБП</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Отправить заявку</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

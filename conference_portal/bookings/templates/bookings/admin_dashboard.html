@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Панель администратора - Конференции.РФ{% endblock %}
+
+{% block content %}
+<h2>Панель администратора</h2>
+{% if bookings %}
+    <div class="table-responsive mt-4">
+        <table class="table table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Пользователь</th>
+                    <th>Помещение</th>
+                    <th>Дата</th>
+                    <th>Оплата</th>
+                    <th>Статус</th>
+                    <th>Действие</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                    <tr>
+                        <td>#{{ booking.id }}</td>
+                        <td>{{ booking.user.full_name }}</td>
+                        <td>{{ booking.room_name }}</td>
+                        <td>{{ booking.conference_date|date:"d.m.Y H:i" }}</td>
+                        <td>{{ booking.get_payment_method_display }}</td>
+                        <td>
+                            <span class="badge bg-{% if booking.status == 'new' %}warning{% elif booking.status == 'scheduled' %}success{% else %}secondary{% endif %}">
+                                {{ booking.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if booking.status != 'completed' %}
+                                <form method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                                    <select name="status" class="form-select form-select-sm d-inline-block w-auto">
+                                        <option value="new" {% if booking.status = 'new' %}selected{% endif %}>Новая</option>
+                                        <option value="scheduled" {% if booking.status = 'scheduled' %}selected{% endif %}>Мероприятие назначено</option>
+                                        <option value="completed" {% if booking.status = 'completed' %}selected{% endif %}>Завершено</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-primary">Обновить</button>
+                                </form>
+                            {% else %}
+                                <span class="text-muted">Завершено</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="alert alert-info mt-4">
+        <p class="mb-0">Нет заявок для просмотра</p>
+    </div>
+{% endif %}
+{% endblock %}
